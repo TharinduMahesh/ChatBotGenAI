@@ -1,0 +1,276 @@
+/* Import fonts as before */
+@import url("https://fonts.googleapis.com/css?family=Raleway|Ubuntu&display=swap");
+
+body {
+    background: #E8EBF5; /* Light grey background for the page */
+    padding: 0;
+    margin: 0;
+    font-family: 'Raleway', sans-serif; /* Use Raleway as the primary font */
+    display: flex; /* Centering the chatbox for demonstration */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Main chat box container */
+.chat-box {
+    width: 380px; /* Slightly adjusted width */
+    height: 600px; /* Fixed height for a consistent look */
+    background: #fff; /* White background */
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Hide scrollbar for the main box, let body scroll */
+    position: relative; /* For absolute positioning of close button if needed */
+
+    /* Initially hidden, will be shown by JS */
+    /* visibility: hidden; */
+    /* opacity: 0; */
+    /* transform: scale(0.95); */
+    /* transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out; */
+}
+
+/* Chat box header */
+.chat-box-header {
+    display: flex;
+    justify-content: space-between; /* Space out title and close button */
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(to right, #6c63ff, #8a85ff); /* Gradient background like image */
+    color: #fff; /* White text */
+    font-family: 'Ubuntu', sans-serif;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+    & h3 {
+        margin: 0;
+        font-weight: 500; /* Slightly bolder */
+        font-size: 18px; /* Larger font size */
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between icon and text */
+    }
+
+    & h3 i {
+        font-size: 20px; /* Icon size */
+    }
+
+    & .close-button { /* Use a specific class for the close button */
+        cursor: pointer;
+        font-size: 24px; /* Larger 'X' */
+        line-height: 1; /* Align 'X' vertically */
+        padding: 0 5px; /* Add some padding */
+    }
+}
+
+/* Chat body for messages */
+.chat-box-body {
+    flex-grow: 1; /* Takes up available space */
+    background: #f8f8f8; /* Very light grey background */
+    padding: 15px 20px;
+    overflow-y: auto; /* Enable scrolling for messages */
+    display: flex;
+    flex-direction: column; /* Messages stack vertically */
+}
+
+/* Message bubble base styles */
+.chat-box-body-send,
+.chat-box-body-receive {
+    max-width: 80%; /* Limit bubble width */
+    margin-bottom: 15px; /* Space between messages */
+    padding: 10px 15px;
+    border-radius: 18px; /* More rounded corners */
+    font-size: 14px;
+    word-wrap: break-word; /* Ensure long words wrap */
+    position: relative; /* For avatar positioning */
+    display: flex;
+    align-items: flex-start; /* Align text to top if avatar is taller */
+    gap: 10px; /* Space between avatar and text */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow on bubbles */
+
+    & .message-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    & p {
+        margin: 0;
+        color: #333; /* Darker text for readability */
+        line-height: 1.4;
+    }
+    & span { /* Timestamps - hide them as per example image */
+        display: none;
+    }
+}
+
+/* Bot messages (receive) */
+.chat-box-body-receive {
+    background: #e0e0e0; /* Light grey for bot messages */
+    color: #333;
+    align-self: flex-start; /* Left align */
+    border-bottom-left-radius: 5px; /* Sharper corner for the 'tail' */
+}
+
+/* User messages (send) */
+.chat-box-body-send {
+    background: #6c63ff; /* Primary color for user messages */
+    color: #fff; /* White text for user messages */
+    align-self: flex-end; /* Right align */
+    border-bottom-right-radius: 5px; /* Sharper corner for the 'tail' */
+
+    & p {
+        color: #fff; /* Ensure text color is white here */
+    }
+}
+
+/* Avatars */
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Circular */
+    background: #ccc; /* Placeholder background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 16px;
+    flex-shrink: 0; /* Prevent avatar from shrinking */
+}
+
+.avatar.bot {
+    background: #8a85ff; /* Bot avatar color */
+}
+
+.avatar.user {
+    background: #6c63ff; /* User avatar color */
+}
+
+/* Chat box footer (input area) */
+.chat-box-footer {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #fff;
+    border-top: 1px solid #eee; /* Subtle separator */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.03); /* Subtle shadow on input */
+
+    & #textInput { /* Input field */
+        flex-grow: 1; /* Takes most of the space */
+        padding: 12px 18px;
+        border: 1px solid #e0e0e0; /* Light border */
+        border-radius: 25px; /* Pill shape */
+        font-family: 'Raleway', sans-serif;
+        font-size: 14px;
+        color: #333;
+        margin-right: 10px; /* Space from send button */
+        background: #f8f8f8; /* Light background for input */
+        &:focus {
+            outline: none;
+            border-color: #6c63ff; /* Highlight on focus */
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        }
+    }
+
+    & .send-button { /* Send button (paper plane) */
+        border: none;
+        background: #6c63ff; /* Primary color */
+        color: #fff;
+        padding: 12px;
+        border-radius: 50%; /* Circular button */
+        cursor: pointer;
+        font-size: 18px; /* Larger icon */
+        display: flex; /* Center the icon */
+        justify-content: center;
+        align-items: center;
+        transition: background 0.2s ease-in-out;
+        &:hover {
+            background: #5a53e5; /* Slightly darker on hover */
+        }
+        &:focus {
+            outline: none;
+        }
+    }
+    /* Removed the #addExtra button as it's not in the reference image */
+    & #addExtra {
+        display: none;
+    }
+}
+
+/* Remove scrollbar styles for webkit browsers */
+.chat-box-body::-webkit-scrollbar {
+    width: 8px;
+}
+.chat-box-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chat-box-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    border: 2px solid #f8f8f8;
+}
+
+/* --- Chat Button (for showing/hiding the chat box) --- */
+.chat-button {
+    /* Your existing chat button styles can go here, but ensure it hides/shows the .chat-box */
+    /* For now, assume chatbox is always visible to debug styling */
+    display: none; /* Hide if chat box is always open for testing */
+}
+
+
+/* Modal styles (if you still need a separate modal, otherwise remove) */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.1);
+    transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+    z-index: 20; /* Ensure modal is above chatbox if chatbox is not modal itself */
+}
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 1rem 1.5rem;
+    width: 24rem;
+    border-radius: 0.5rem;
+}
+.modal-close-button {
+    float: right;
+    width: 1.5rem;
+    line-height: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    background-color: lightgray;
+}
+.close-button:hover {
+    background-color: darkgray;
+}
+.show-modal {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
+    z-index: 30;
+}
+
+@media only screen and (max-width: 450px) {
+    .chat-box {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0;
+    }
+    body {
+        align-items: flex-start; /* Remove vertical centering on small screens */
+    }
+}

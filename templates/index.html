@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthBot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Using Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts for Raleway and Ubuntu -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700|Ubuntu:400,500,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="chat-box" id="chatBox">
+        <div class="chat-box-header">
+            <h3><i class="fas fa-stethoscope"></i> HealthBot</h3>
+            <span class="close-button" id="closeChatButton">&times;</span>
+        </div>
+        <div class="chat-box-body" id="chat-box-body">
+            <!-- Initial bot message -->
+            <div class="chat-box-body-receive">
+                <div class="avatar bot"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <p>Hello, I'm HealthBot. How can I assist you today?</p>
+                </div>
+            </div>
+            <!-- Messages will be dynamically added here by JavaScript -->
+        </div>
+        <div class="chat-box-footer">
+            <input id="textInput" placeholder="Type your message..." type="text" />
+            <button class="send-button" id="sendButton"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- The chat-button and modal are removed if the chat-box is intended to be always visible or directly controlled by another UI element. -->
+    <!-- If you need the chat-button to toggle the chat box, you'll need to re-introduce it and adjust its JS -->
+    <!-- For now, assuming the chatbox is initially visible -->
+    <div class="chat-button" id="chatToggleButton" style="display: none;"><span></span></div>
+
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const chatBoxBody = document.getElementById('chat-box-body');
+        const textInput = document.getElementById('textInput');
+        const sendButton = document.getElementById('sendButton');
+        const closeChatButton = document.getElementById('closeChatButton');
+        const chatToggleButton = document.getElementById('chatToggleButton'); // If you re-introduce it
+
+        // Function to add a message to the chat body
+        function addMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(sender === 'user' ? 'chat-box-body-send' : 'chat-box-body-receive');
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('avatar', sender === 'user' ? 'user' : 'bot');
+            const avatarIcon = document.createElement('i');
+            avatarIcon.classList.add('fas', sender === 'user' ? 'fa-user' : 'fa-robot');
+            avatarDiv.appendChild(avatarIcon);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            const p = document.createElement('p');
+            p.textContent = message;
+            contentDiv.appendChild(p);
+
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+
+            chatBoxBody.appendChild(messageDiv);
+            chatBoxBody.scrollTop = chatBoxBody.scrollHeight; // Scroll to bottom
+        }
+
+        // Event listener for sending messages
+        sendButton.addEventListener('click', async () => {
+            const userMessage = textInput.value.trim();
+            if (userMessage !== '') {
+                addMessage('user', userMessage);
+                textInput.value = ''; // Clear input
+
+                // Show a "thinking" message or spinner (optional)
+                const thinkingMessageDiv = document.createElement('div');
+                thinkingMessageDiv.classList.add('chat-box-body-receive');
+                thinkingMessageDiv.innerHTML = '<div class="avatar bot"><i class="fas fa-robot"></i></div><div class="message-content"><p>HealthBot is typing...</p></div>';
+                chatBoxBody.appendChild(thinkingMessageDiv);
+                chatBoxBody.scrollTop = chatBoxBody.scrollHeight;
+
+
+                // Send message to Flask backend
+                try {
+                    const response = await fetch('/get', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `msg=${encodeURIComponent(userMessage)}`
+                    });
+                    const botResponse = await response.text();
+
+                    // Remove thinking message
+                    chatBoxBody.removeChild(thinkingMessageDiv);
+
+                    addMessage('bot', botResponse);
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    // Remove thinking message and add error message
+                    chatBoxBody.removeChild(thinkingMessageDiv);
+                    addMessage('bot', 'Sorry, I am having trouble connecting right now. Please try again later.');
+                }
+            }
+        });
+
+        // Allow sending message with Enter key
+        textInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        // Toggle chat box visibility (if you want it to hide/show)
+        chatToggleButton.addEventListener('click', () => {
+            if (chatBox.style.visibility === 'visible' || chatBox.style.visibility === '') {
+                chatBox.style.visibility = 'hidden';
+                chatBox.style.opacity = '0';
+                chatBox.style.transform = 'scale(0.95)';
+            } else {
+                chatBox.style.visibility = 'visible';
+                chatBox.style.opacity = '1';
+                chatBox.style.transform = 'scale(1)';
+            }
+        });
+
+        // Close chat button
+        closeChatButton.addEventListener('click', () => {
+            // This example simply hides the chat box, you might want to remove it or minimize
+            chatBox.style.visibility = 'hidden';
+            chatBox.style.opacity = '0';
+            chatBox.style.transform = 'scale(0.95)';
+        });
+
+        // Initial welcome message (already in HTML for a clean start)
+    </script>
+</body>
+</html>
