@@ -94,7 +94,7 @@ docsearch = PineconeVectorStore.from_existing_index(
 retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":3})
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-pro", # Ensure your API key has access to 2.0
+    model="gemini-2.5-flash", # Ensure your API key has access to 2.0
     temperature=0.4,
     max_output_tokens=500,
     google_api_key=GOOGLE_API_KEY
